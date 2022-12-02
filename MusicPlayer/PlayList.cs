@@ -1,4 +1,6 @@
-﻿namespace MusicPlayer
+﻿using System.Diagnostics.Metrics;
+
+namespace MusicPlayer
 {
     internal static class PlayList
     {
@@ -7,9 +9,15 @@
 
         public static int _id;
 
-        private static int _delId;
-      
+        private static double _delId;
+
+        private static bool _session;
+
         
+
+        private static bool _success;
+
+
 
 
 
@@ -99,39 +107,99 @@
 
         public static void AddSongs()
         {
+            
+            
 
                 Console.Clear();
 
                 Utility.MainMenu();
-
-            Utility.PrintColorMessage(ConsoleColor.Cyan, "Enter the new song name");
-
-                string newSongName = Console.ReadLine().Trim();
-
-            Utility.PrintColorMessage(ConsoleColor.Cyan, "Enter Artist Name");
-
-                string artistName = Console.ReadLine().Trim();
-
-                foreach (Music song in AllSongs())
+            try
+            {
+                while (!_session)
                 {
-                    if (song.Id != _id)
+                    double _value;
+
+                Start: Utility.PrintColorMessage(ConsoleColor.Cyan, "Enter the new song name");
+
+                    string newSongName = Console.ReadLine().Trim();
+
+                    if (string.IsNullOrEmpty(newSongName))
                     {
-                        _id += 1;
+                        Utility.PrintColorMessage(ConsoleColor.Red, "The new song name is required");
+
+                        goto Start;
                     }
+                   _success = double.TryParse(newSongName, out _value);
+
+                    if (_success)
+                    {
+                        Utility.PrintColorMessage(ConsoleColor.Red, "cannot use an integer");
+
+                        goto Start;
+                    }
+
+                    StartTwo:  Utility.PrintColorMessage(ConsoleColor.Cyan, "Enter Artist Name");
+
+                    string artistName = Console.ReadLine().Trim();
+
+                    if (string.IsNullOrEmpty(artistName))
+                    {
+                        Utility.PrintColorMessage(ConsoleColor.Red, "The new artist name is required");
+
+                        goto StartTwo;
+                    }
+
+                    
+                     _success = double.TryParse(artistName, out _value);
+
+                    if (_success)
+                    {
+                        Utility.PrintColorMessage(ConsoleColor.Red, "cannot use an integer");
+
+                        goto StartTwo;
+                    }
+
+                    foreach (Music song in AllSongs())
+                    {
+                        if (song.Id != _id)
+                        {
+                            _id += 1;
+                        }
+                    }
+
+
+                    AllSongs().Add(new Music() { Id = _id + 1, MusicName = newSongName, ArtistName = artistName });
+
+
+                    SeeAllSongs();
+
+                    Utility.PrintColorMessage(ConsoleColor.Yellow, "Press any key to return to main menu");
+
+                    Console.ReadKey();
+
+                    Console.Clear();
+
+                    Utility.OptionSelectMenu();
+                    break;
                 }
 
+            }
+            catch(FormatException)
+            {
+                Utility.PrintColorMessage(ConsoleColor.Red, "Input must not be an integer");
 
-                AllSongs().Add(new Music() { Id = _id + 1, MusicName = newSongName, ArtistName = artistName });
+            }catch(ArgumentException)
+            {
+                Utility.PrintColorMessage(ConsoleColor.Red, "Input must not be an integer");
 
-                SeeAllSongs();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
 
-                Console.WriteLine("Press any key to return to main menu");
+            }
 
-                Console.ReadKey();
-
-                Console.Clear();
-
-                Utility.OptionSelectMenu();
+           
                
 
         }
@@ -143,27 +211,34 @@
         public static void DeleteMusic()
         {
             Utility.PrintColorMessage(ConsoleColor.Red, "Danger Zone, \nPlease enter the Id  of the song you want to delete");
+            try
+            {
+                _delId = double.Parse(Console.ReadLine());
+               
 
-            _delId = int.Parse(Console.ReadLine());
+                var deleteresult = AllSongs().First(p => p.Id == _delId);
 
+                AllSongs().Remove(deleteresult);
 
-            var deleteresult = AllSongs().First(p => p.Id == _delId);
+                Utility.PrintColorMessage(ConsoleColor.Green, "Song deleting successfully");
 
-            AllSongs().Remove(deleteresult);
+                Utility.printDotAnimation(15);
 
-            Utility.PrintColorMessage(ConsoleColor.Green, "Song deleting successfully");
+                SeeAllSongs();
 
-            Utility.printDotAnimation(15);
+                Utility.printDotAnimation(15);
 
-            SeeAllSongs();
+                Console.WriteLine();
 
-            Utility.printDotAnimation(15);
+                Utility.NextMenu();
 
-            Console.WriteLine();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
 
-            Utility.NextMenu();
-          
-
+            }
+           
 
         }
 
@@ -171,30 +246,78 @@
         {
             Utility.MainMenu();
 
-            Console.WriteLine("Enter the Id of the music you want to Edit");
+            startOne: Utility.PrintColorMessage(ConsoleColor.Cyan, "Enter the Id of the music you want to Edit");
 
-            int editId = int.Parse(Console.ReadLine());
+            try
+            {
+                double _value;
 
+                double editId = double.Parse(Console.ReadLine());
 
-            var result = AllSongs().SingleOrDefault(p => p.Id == editId); //lamda expression
+            
+                var result = AllSongs().SingleOrDefault(p => p.Id == editId); //lamda expression
 
-            if (result !=null)
+                if (result.Id !=editId)
                 {
-                    Utility.PrintColorMessage(ConsoleColor.Cyan, "Enter the new song name that updates the former");
+                    Utility.PrintColorMessage(ConsoleColor.Red, "Please enter a valid Id");
+                    goto startOne;
+
+                }
+
+
+
+                if (result != null)
+                {
+
+                    start: Utility.PrintColorMessage(ConsoleColor.Cyan, "Enter the new song name that updates the former");
 
                     string updateSongName = Console.ReadLine().Trim();
+
+                    _success = double.TryParse(updateSongName, out _value);
+
+                    if (_success)
+                    {
+                        Console.WriteLine("cannot use an integer");
+
+                        goto start;
+                    }
 
                     Utility.PrintColorMessage(ConsoleColor.Cyan, "Enter the new Artist Name which updates the former");
 
                     string updateartistName = Console.ReadLine().Trim();
 
-                    result.ArtistName = updateSongName;
+                    _success = double.TryParse(updateartistName, out _value);
+
+                    if (_success)
+                    {
+                        Console.WriteLine("cannot use an integer");
+
+                        goto start;
+                    }
+
+                    result.MusicName = updateSongName;
 
                     result.ArtistName = updateartistName;
 
                     SeeAllSongs();
+                    Utility.printDotAnimation(15);
+                    Utility.NextMenu();
+
+
+
+
                 }
-                
+
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                goto startOne;
+
+            }
+
+            
 
               
             
@@ -203,25 +326,44 @@
 
         public static void ExitProgram()
         {
-            Utility.PrintColorMessage(ConsoleColor.Green, "Are you sure you want to exit? Type 1 to exit or 2 to continue");
+            start:  Utility.PrintColorMessage(ConsoleColor.Green, "Are you sure you want to exit? Type 1 to exit or 2 to continue");
 
-            int input = int.Parse(Console.ReadLine());
-
-            switch (input)
+            try
             {
-                case 1:
-                    Environment.Exit(0);
-                    break;
-                case 2:
-                    Console.Clear();
 
-                    Utility.OptionSelectMenu();
-                    
+                int input = int.Parse(Console.ReadLine());
+                switch (input)
+                {
+                    case 1:
+                        Console.Clear();
+                        Environment.Exit(0);
+                        break;
+                    case 2:
+                        Console.Clear();
 
-                    break;
+                        Utility.OptionSelectMenu();
 
+
+                        break;
+                    default:
+                        Console.WriteLine("please enter a valid input");
+                        ExitProgram();
+                        break;
+                }
+            }
+            catch(FormatException)
+            {
+                Console.WriteLine("Invalid Input");
+                goto start;
 
             }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                goto start;
+            }
+
+         
           
         }
 
@@ -234,11 +376,13 @@
         {
             public static void Run()
             {
-
+                Utility.Welcome();
+                Thread.Sleep(1200);
+                Console.Clear();
 
                 Utility.OptionSelectMenu();
 
-            start: Console.WriteLine("Please enter your choice from list above");
+            startNext: Console.WriteLine("Please enter your choice from list above");
 
                 _userChoice = int.Parse(Console.ReadLine());
 
@@ -255,7 +399,7 @@
 
                         Utility.NextMenu();
 
-                        goto start;
+                        goto startNext;
                         
                         break;
                     case 2:
@@ -265,7 +409,7 @@
 
                         Utility.printDotAnimation(15);
 
-                        goto start;
+                        goto startNext;
               
                         break;
                     case 3:
@@ -273,13 +417,14 @@
                         Console.Clear();
 
                         EditMusic();
+                        goto startNext;
 
                         break;
                     case 4:
 
                         DeleteMusic();
 
-                        goto start;
+                        goto startNext;
 
                         break;
                     case 5:
@@ -289,7 +434,9 @@
                         break;
                     case 6:
                         CreatePlayList.ShowAllPlaylist();
-                        goto start;
+
+                        goto startNext;
+
                         break;
                     case 7:
                         Console.Clear();
@@ -300,19 +447,20 @@
 
                         Utility.NextMenu();
 
-                        goto start;
+                        goto startNext;
 
                         break;
                     case 8:
+
                         ExitProgram();
 
-                        goto start;
+                        goto startNext;
 
                         break;
                     default:
                         Console.WriteLine("Please enter a valid input");
 
-                        goto start;
+                        goto startNext;
 
                         break;
 
