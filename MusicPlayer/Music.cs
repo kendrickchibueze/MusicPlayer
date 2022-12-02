@@ -9,10 +9,7 @@ namespace MusicPlayer
     internal class Music
     {
 
-        private string _songs;
-
-
-
+        
 
         public int Id{ get; set; }
         public string MusicName { get; set; }

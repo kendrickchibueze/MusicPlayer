@@ -239,7 +239,9 @@
                 Utility.OptionSelectMenu();
 
             start: Console.WriteLine("Please enter your choice from list above");
+
                 _userChoice = int.Parse(Console.ReadLine());
+
                 switch (_userChoice)
                 {
                     case 1:
@@ -286,7 +288,8 @@
 
                         break;
                     case 6:
-                        CreatePlayList.CreatePlaylist();
+                        CreatePlayList.ShowAllPlaylist();
+                        goto start;
                         break;
                     case 7:
                         Console.Clear();
