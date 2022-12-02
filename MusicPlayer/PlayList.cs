@@ -353,7 +353,7 @@ namespace MusicPlayer
             }
             catch(FormatException)
             {
-                Console.WriteLine("Invalid Input");
+                Utility.PrintColorMessage(ConsoleColor.Red, "Invalid Input");
                 goto start;
 
             }
@@ -384,88 +384,108 @@ namespace MusicPlayer
 
             startNext: Console.WriteLine("Please enter your choice from list above");
 
-                _userChoice = int.Parse(Console.ReadLine());
-
-                switch (_userChoice)
+                try
                 {
-                    case 1:
-                        Console.Clear();
+                    _userChoice = int.Parse(Console.ReadLine());
 
-                        Utility.MainMenu();
+                    switch (_userChoice)
+                    {
+                        case 1:
+                            Console.Clear();
 
-                        SeeAllSongs();
+                            Utility.MainMenu();
 
-                        Utility.printDotAnimation(15);
+                            SeeAllSongs();
 
-                        Utility.NextMenu();
+                            Utility.printDotAnimation(15);
 
-                        goto startNext;
-                        
-                        break;
-                    case 2:
-                        Console.Clear();
+                            Utility.NextMenu();
 
-                        AddSongs();
+                            goto startNext;
 
-                        Utility.printDotAnimation(15);
+                            break;
+                        case 2:
+                            Console.Clear();
 
-                        goto startNext;
-              
-                        break;
-                    case 3:
+                            AddSongs();
 
-                        Console.Clear();
+                            Utility.printDotAnimation(15);
 
-                        EditMusic();
-                        goto startNext;
+                            goto startNext;
 
-                        break;
-                    case 4:
+                            break;
+                        case 3:
 
-                        DeleteMusic();
+                            Console.Clear();
 
-                        goto startNext;
+                            EditMusic();
+                            goto startNext;
 
-                        break;
-                    case 5:
+                            break;
+                        case 4:
 
-                        CreatePlayList.CreatePlaylist();
+                            DeleteMusic();
 
-                        break;
-                    case 6:
-                        CreatePlayList.ShowAllPlaylist();
+                            goto startNext;
 
-                        goto startNext;
+                            break;
+                        case 5:
 
-                        break;
-                    case 7:
-                        Console.Clear();
+                            CreatePlayList.CreatePlaylist();
 
-                        Utility.MainMenu();
+                            break;
+                        case 6:
+                            CreatePlayList.ShowAllPlaylist();
 
-                        PrintMusic(ShuffleMusic());
+                            goto startNext;
 
-                        Utility.NextMenu();
+                            break;
+                        case 7:
+                            Console.Clear();
 
-                        goto startNext;
+                            Utility.MainMenu();
 
-                        break;
-                    case 8:
+                            PrintMusic(ShuffleMusic());
 
-                        ExitProgram();
+                            Utility.NextMenu();
 
-                        goto startNext;
+                            goto startNext;
 
-                        break;
-                    default:
-                        Console.WriteLine("Please enter a valid input");
+                            break;
+                        case 8:
 
-                        goto startNext;
+                            ExitProgram();
 
-                        break;
+                            goto startNext;
+
+                            break;
+                        default:
+                            Utility.PrintColorMessage(ConsoleColor.Red, "Please enter a valid input");
+
+                            goto startNext;
+
+                            break;
+
+                    }
+
 
                 }
+                catch(FormatException)
+                {
+                    Utility.PrintColorMessage(ConsoleColor.Red, "Please enter a valid input");
+                    goto startNext;
 
+                }
+                catch (OverflowException)
+                {
+                    Utility.PrintColorMessage(ConsoleColor.Red, "please enter a valid input");
+                    goto startNext;
+                }catch(Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+
+                
 
 
 
