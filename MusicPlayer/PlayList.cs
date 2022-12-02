@@ -4,10 +4,12 @@
     {
         
         private static int _userChoice;
+
         public static int _id;
+
         private static int _delId;
-        private static readonly Random random = new();
-        public static List<Music> MusicList { get; set; } = new List<Music>();
+      
+        
 
 
 
@@ -48,52 +50,50 @@
 
         }
 
-        //public static List<Music> ShuffleMusic()
-        //{
-        //    var shuffleList = AllSongs().ToList();
-        //    var musicCount = AllSongs().Count;
-
-        //    var randomNumGen = new Random();
-
-        //    //int n = list.Count;
-        //    while (musicCount > 1)
-        //    {
-        //        musicCount--;
-
-        //        int randNumber = randomNumGen.Next(musicCount + 1);
-
-        //        var music = shuffleList[randNumber];
-        //        shuffleList[randNumber] = shuffleList[musicCount];
-        //        shuffleList[musicCount] = music;
-
-        //    }
-        //    SeeAllSongs();
-        //    return shuffleList;
-        //}
-
-
-
-
-
-        public static void Shuffle<T>(this IList<T> list)
+        public static List<Music> ShuffleMusic()
         {
-            int n = list.Count;
-            while (n > 1)
+            var shuffleList = AllSongs().ToList();
+
+            var musicCount = AllSongs().Count;
+
+            var randomNumGen = new Random();
+
+            //int n = list.Count;
+            while (musicCount > 1)
             {
-                n--;
-                int p = random.Next(n + 1);
-                (list[n], list[p]) = (list[p], list[n]);
+                musicCount--;
+
+                int randNumber = randomNumGen.Next(musicCount + 1);
+
+                var music = shuffleList[randNumber];
+
+                shuffleList[randNumber] = shuffleList[musicCount];
+
+                shuffleList[musicCount] = music;
+
             }
+             
+             Utility.printDotAnimation(15);
+             
+
+            return shuffleList;
         }
 
-        public static void ShuffleMusic()
+
+        static void PrintMusic(List<Music> musicList)
         {
+            if (musicList == null) return;
 
-            AllSongs().Shuffle();
-            SeeAllSongs();
-            Utility.printDotAnimation(15);
-            Utility.NextMenu();
+            foreach (var music in musicList)
+            {
+                
 
+                Utility.PrintColorMessage(ConsoleColor.Cyan, $"{music.Id}  {music.MusicName} By {music.ArtistName}");
+
+                Console.WriteLine();
+            }
+
+            Console.WriteLine();
         }
 
 
@@ -122,10 +122,15 @@
 
 
                 AllSongs().Add(new Music() { Id = _id + 1, MusicName = newSongName, ArtistName = artistName });
+
                 SeeAllSongs();
+
                 Console.WriteLine("Press any key to return to main menu");
+
                 Console.ReadKey();
+
                 Console.Clear();
+
                 Utility.OptionSelectMenu();
                
 
@@ -143,12 +148,19 @@
 
 
             var deleteresult = AllSongs().First(p => p.Id == _delId);
+
             AllSongs().Remove(deleteresult);
+
             Utility.PrintColorMessage(ConsoleColor.Green, "Song deleting successfully");
+
             Utility.printDotAnimation(15);
+
             SeeAllSongs();
+
             Utility.printDotAnimation(15);
+
             Console.WriteLine();
+
             Utility.NextMenu();
           
 
@@ -177,6 +189,7 @@
                     string updateartistName = Console.ReadLine().Trim();
 
                     result.ArtistName = updateSongName;
+
                     result.ArtistName = updateartistName;
 
                     SeeAllSongs();
@@ -190,7 +203,8 @@
 
         public static void ExitProgram()
         {
-            Console.WriteLine("Are you sure you want to exit? Type 1 to exit or 2 to continue");
+            Utility.PrintColorMessage(ConsoleColor.Green, "Are you sure you want to exit? Type 1 to exit or 2 to continue");
+
             int input = int.Parse(Console.ReadLine());
 
             switch (input)
@@ -230,47 +244,73 @@
                 {
                     case 1:
                         Console.Clear();
+
                         Utility.MainMenu();
+
                         SeeAllSongs();
+
                         Utility.printDotAnimation(15);
+
                         Utility.NextMenu();
+
                         goto start;
                         
                         break;
                     case 2:
                         Console.Clear();
+
                         AddSongs();
+
                         Utility.printDotAnimation(15);
+
                         goto start;
               
                         break;
                     case 3:
+
                         Console.Clear();
+
                         EditMusic();
+
                         break;
                     case 4:
+
                         DeleteMusic();
+
                         goto start;
+
                         break;
                     case 5:
+
                         CreatePlayList.CreatePlaylist();
+
                         break;
                     case 6:
                         CreatePlayList.CreatePlaylist();
                         break;
                     case 7:
                         Console.Clear();
+
                         Utility.MainMenu();
-                        ShuffleMusic();
+
+                        PrintMusic(ShuffleMusic());
+
+                        Utility.NextMenu();
+
                         goto start;
+
                         break;
                     case 8:
                         ExitProgram();
+
                         goto start;
+
                         break;
                     default:
                         Console.WriteLine("Please enter a valid input");
+
                         goto start;
+
                         break;
 
                 }
